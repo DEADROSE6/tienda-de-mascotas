@@ -24,7 +24,6 @@ const productosStockBajoElement = document.getElementById("productosStockBajo");
 const productosVentaElement = document.getElementById("productosVenta");
 const totalVendidoElement = document.getElementById("totalVendido");
 
-
 function guardarProductos() {
     localStorage.setItem("productosPetMarket", JSON.stringify(productos));
 }
@@ -37,7 +36,6 @@ function guardarHistorial() {
     localStorage.setItem("historialVentasPetMarket", JSON.stringify(historialVentas));
 }
 
-
 function mostrarMensaje(texto, tipo) {
     mensaje.textContent = texto;
     mensaje.className = "mensaje " + tipo;
@@ -47,24 +45,6 @@ function mostrarMensaje(texto, tipo) {
         mensaje.textContent = "";
     }, 3500);
 }
-
-
-/* =========================================
-   BLOQUEAR CARACTERES NO VALIDOS EN PRECIO
-========================================= */
-
-precioInput.addEventListener("keydown", function(event) {
-
-    if (
-        event.key === "-" ||
-        event.key === "+" ||
-        event.key === "e"
-    ) {
-        event.preventDefault();
-    }
-
-});
-
 
 function validarProducto(codigo, nombre, tipoMascota, precio, stock) {
 
@@ -96,7 +76,6 @@ function validarProducto(codigo, nombre, tipoMascota, precio, stock) {
         return "Debes seleccionar el tipo de mascota.";
     }
 
-    /* VALIDACION DEL PRECIO */
     if (isNaN(precio) || precio <= 0) {
         return "El precio debe ser mayor que 0.";
     }
@@ -107,6 +86,21 @@ function validarProducto(codigo, nombre, tipoMascota, precio, stock) {
 
     return null;
 }
+
+
+/* BLOQUEAR SIGNOS Y LETRA E EN EL PRECIO */
+precioInput.addEventListener("keydown", function(event) {
+
+    if (
+        event.key === "-" ||
+        event.key === "+" ||
+        event.key === "e" ||
+        event.key === "E"
+    ) {
+        event.preventDefault();
+    }
+
+});
 
 
 formProducto.addEventListener("submit", function(event) {
@@ -197,14 +191,17 @@ function renderizarProductos() {
         let claseStock = "";
 
         if (producto.stock === 0) {
+
             estado = "Agotado";
             claseStock = "stock-agotado";
-        }
-        else if (producto.stock <= 5) {
+
+        } else if (producto.stock <= 5) {
+
             estado = "Stock bajo";
             claseStock = "stock-bajo";
-        }
-        else {
+
+        } else {
+
             estado = "Disponible";
             claseStock = "stock-normal";
         }
@@ -240,11 +237,10 @@ function renderizarProductos() {
 function eliminarProducto(id) {
 
     const productoEnVenta =
-        carritoVenta.some(
-            item => item.productoId === id
-        );
+        carritoVenta.some(item => item.productoId === id);
 
     if (productoEnVenta) {
+
         mostrarMensaje(
             "No puedes eliminar un producto que está en la venta actual.",
             "error"
@@ -268,9 +264,7 @@ function eliminarProducto(id) {
     }
 
     productos =
-        productos.filter(
-            p => p.id !== id
-        );
+        productos.filter(p => p.id !== id);
 
     guardarProductos();
 
@@ -318,6 +312,7 @@ btnAgregarVenta.addEventListener("click", function() {
         Number(cantidadVentaInput.value);
 
     if (!productoId) {
+
         mostrarMensaje(
             "Selecciona un producto.",
             "error"
@@ -326,10 +321,8 @@ btnAgregarVenta.addEventListener("click", function() {
         return;
     }
 
-    if (
-        !Number.isInteger(cantidad) ||
-        cantidad <= 0
-    ) {
+    if (!Number.isInteger(cantidad) || cantidad <= 0) {
+
         mostrarMensaje(
             "La cantidad debe ser un número entero mayor que 0.",
             "error"
@@ -339,11 +332,10 @@ btnAgregarVenta.addEventListener("click", function() {
     }
 
     const producto =
-        productos.find(
-            p => p.id === productoId
-        );
+        productos.find(p => p.id === productoId);
 
     if (!producto) {
+
         mostrarMensaje(
             "El producto no existe.",
             "error"
@@ -362,10 +354,8 @@ btnAgregarVenta.addEventListener("click", function() {
             ? itemExistente.cantidad
             : 0;
 
-    if (
-        cantidadActual + cantidad >
-        producto.stock
-    ) {
+    if (cantidadActual + cantidad > producto.stock) {
+
         mostrarMensaje(
             `No puedes vender más de ${producto.stock} unidades disponibles.`,
             "error"
@@ -375,9 +365,11 @@ btnAgregarVenta.addEventListener("click", function() {
     }
 
     if (itemExistente) {
+
         itemExistente.cantidad += cantidad;
-    }
-    else {
+
+    } else {
+
         carritoVenta.push({
             productoId: producto.id,
             cantidad
@@ -413,8 +405,7 @@ function renderizarVenta() {
             </tr>
         `;
 
-        totalVentaElement.textContent =
-            "S/ 0.00";
+        totalVentaElement.textContent = "S/ 0.00";
 
         return;
     }
@@ -442,17 +433,9 @@ function renderizarVenta() {
 
         fila.innerHTML = `
             <td>${producto.nombre}</td>
-
             <td>${item.cantidad}</td>
-
-            <td>
-                S/ ${producto.precio.toFixed(2)}
-            </td>
-
-            <td>
-                S/ ${subtotal.toFixed(2)}
-            </td>
-
+            <td>S/ ${producto.precio.toFixed(2)}</td>
+            <td>S/ ${subtotal.toFixed(2)}</td>
             <td>
                 <button
                     class="btn btn-danger btn-small"
@@ -564,9 +547,15 @@ btnConfirmarVenta.addEventListener("click", function() {
     });
 
     const nuevaVenta = {
+
         id: Date.now(),
-        fecha: new Date().toLocaleString("es-PE"),
-        productos: productosVendidos,
+
+        fecha:
+            new Date().toLocaleString("es-PE"),
+
+        productos:
+            productosVendidos,
+
         total
     };
 
@@ -620,9 +609,7 @@ function renderizarHistorial() {
 
         fila.innerHTML = `
             <td>${venta.fecha}</td>
-
             <td>${nombresProductos}</td>
-
             <td>
                 <strong>
                     S/ ${venta.total.toFixed(2)}
@@ -697,6 +684,7 @@ function cargarDatosEjemplo() {
     }
 
     productos = [
+
         {
             id: 1,
             codigo: "DOG001",
@@ -705,6 +693,7 @@ function cargarDatosEjemplo() {
             precio: 65.90,
             stock: 15
         },
+
         {
             id: 2,
             codigo: "CAT001",
@@ -713,6 +702,7 @@ function cargarDatosEjemplo() {
             precio: 58.50,
             stock: 10
         },
+
         {
             id: 3,
             codigo: "AVE001",
@@ -721,6 +711,7 @@ function cargarDatosEjemplo() {
             precio: 18.90,
             stock: 25
         },
+
         {
             id: 4,
             codigo: "PEZ001",
@@ -729,6 +720,7 @@ function cargarDatosEjemplo() {
             precio: 12.50,
             stock: 4
         },
+
         {
             id: 5,
             codigo: "CON001",
